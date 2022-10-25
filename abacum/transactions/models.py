@@ -1,7 +1,7 @@
-from multiprocessing.sharedctypes import Value
+from decimal import Decimal
 from django.db import models
 
-# Create your models here.
+
 class Transaction(models.Model):
     """
     Model to store the below csv content:
@@ -11,11 +11,11 @@ class Transaction(models.Model):
     2020-10-26,52000012,176450.62
     ...
     """
+
     date = models.DateField()
     account = models.PositiveBigIntegerField(db_index=True)
     amount = models.DecimalField(max_digits=9, decimal_places=2)
 
-
     @classmethod
-    def create(cls, date, account, amount):
+    def create(cls, date: str, account: int, amount: Decimal):
         return cls(date=date, account=account, amount=amount)
