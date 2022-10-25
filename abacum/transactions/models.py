@@ -1,3 +1,4 @@
+from multiprocessing.sharedctypes import Value
 from django.db import models
 
 # Create your models here.
@@ -13,3 +14,8 @@ class Transaction(models.Model):
     date = models.DateField()
     account = models.PositiveBigIntegerField(db_index=True)
     amount = models.DecimalField(max_digits=9, decimal_places=2)
+
+
+    @classmethod
+    def create(cls, date, account, amount):
+        return cls(date=date, account=account, amount=amount)
