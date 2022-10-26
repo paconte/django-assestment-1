@@ -1,3 +1,6 @@
+shell:
+	cd abacum && python manage.py shell
+
 linters:
 	cd abacum && black . && flake8 --config .flake8
 
@@ -15,3 +18,9 @@ runserver:
 
 test:
 	cd abacum && python manage.py test transactions
+
+import_csv:
+# examples:
+# make import_csv IN_FILE=data/test/data.csv
+# make import_csv IN_FILE=data/test/test1.csv -o data/errors1.csv
+	cd abacum && python manage.py import_csv $(IN_FILE) -o $(OUT_FILE)
