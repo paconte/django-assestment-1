@@ -1,5 +1,12 @@
 from decimal import Decimal
+from multiprocessing.sharedctypes import Value
+from typing import TypeVar
 from django.db import models
+
+from .utils import is_max_two_decimals, is_future, is_max_seven_digits
+
+
+Trx = TypeVar('Trx', bound='Transaction')
 
 
 class Transaction(models.Model):
@@ -17,5 +24,20 @@ class Transaction(models.Model):
     amount = models.DecimalField(max_digits=9, decimal_places=2)
 
     @classmethod
-    def create(cls, date: str, account: int, amount: Decimal):
+    def create(cls, date: str, account: int, amount: Decimal) -> Trx:
         return cls(date=date, account=account, amount=amount)
+
+    def validate_and_raise(self) -> None:
+        if not is_max_two_decimals(self.amount):
+            raise ValueError("Amount has more than two decimals")
+        if not is_max_seven_digits(self.amount):
+            raise ValueError("Amount has more than seven integer digits")
+        if is_future(self.date):
+            raise ValueError("Date is in the future")
+
+    def validate(self) -> bool:
+        try:
+            self.validate_and_raise()
+        except ValueError:
+            return False
+        return True
