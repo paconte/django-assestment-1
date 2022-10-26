@@ -24,6 +24,6 @@ def is_max_two_decimals(value: Decimal) -> bool:
         return False
     return True
 
+
 def is_max_seven_digits(value: Decimal) -> bool:
     return 10_000_000 > value.quantize(0)
-
