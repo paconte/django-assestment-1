@@ -1,11 +1,17 @@
 import datetime
+import pandas as pd
+
 from decimal import Decimal
-from io import StringIO
+from io import BytesIO, StringIO
 from unittest import TestCase
 
-from django.test import TransactionTestCase
-from django.db.utils import IntegrityError
 from django.core.management import call_command
+from django.db.utils import IntegrityError
+from django.test import TransactionTestCase
+from django.urls import reverse
+
+from rest_framework import status
+from rest_framework.test import APITestCase
 
 from .models import Transaction
 from .utils import (
@@ -18,6 +24,9 @@ from .utils import (
 
 
 today = datetime.datetime.today().date()
+csv_test_file_1 = "data/test/test1.csv"
+csv_test_file_2 = "data/test/test2.csv"
+csv_test_file_3 = "data/test/data.csv"
 
 
 class TransactionModelTests(TransactionTestCase):
@@ -35,16 +44,25 @@ class TransactionModelTests(TransactionTestCase):
         self.assertTrue(t.validate())
 
     def test_create_transaction(self):
+        """
+        Ensure we can create simple transaction objects
+        """
         transaction = Transaction.objects.create(date=today, account=1, amount=1000)
         self.assertEqual(transaction.pk, 1)
         transaction = Transaction.objects.create(date=today, account=2, amount=-1000)
         self.assertEqual(transaction.pk, 2)
 
     def test_account(self):
+        """
+        Ensure the db dont accept wrong account numbers
+        """
         with self.assertRaises(IntegrityError):
             Transaction.objects.create(date=today, account=-1, amount=1000)
 
     def test_amount(self):
+        """
+        Ensure the db dont accept wrong amount decimals and accept valid decimals
+        """
         amount = Decimal("1000000")  # 7 figures
         Transaction.objects.create(date=today, account=1, amount=amount)
 
@@ -63,19 +81,22 @@ class TransactionModelTests(TransactionTestCase):
         #    Transaction.objects.create(date=today, account=4, amount=amount)
 
     def test_read_csv_command_output(self):
+        """
+        Ensure we can import a valid csv file from CLI
+        """
         out = StringIO()
 
-        call_command("import_csv", "data/test/test1.csv", stdout=out)
+        call_command("import_csv", csv_test_file_1, stdout=out)
         expected_output = "Read rows: 6. Not read rows: 6"
         self.assertIn(expected_output, out.getvalue())
-        self.assertEquals(6, len(Transaction.objects.all()))
+        self.assertEquals(6, Transaction.objects.count())
 
-        call_command("import_csv", "data/test/test2.csv", stdout=out)
+        call_command("import_csv", csv_test_file_2, stdout=out)
         expected_output = "Read rows: 3. Not read rows: 3"
         self.assertIn(expected_output, out.getvalue())
-        self.assertEquals(9, len(Transaction.objects.all()))
+        self.assertEquals(9, Transaction.objects.count())
 
-        call_command("import_csv", "data/test/data.csv", stdout=out)
+        call_command("import_csv", csv_test_file_3, stdout=out)
         expected_output = "Read rows: 79999. Not read rows: 0"
         self.assertIn(expected_output, out.getvalue())
         self.assertEquals(80008, len(Transaction.objects.all()))
@@ -103,3 +124,22 @@ class UtilsTests(TestCase):
         self.assertTrue(is_max_seven_digits(Decimal(1000000)))  # 7 digits
         self.assertTrue(is_max_seven_digits(Decimal(9999999)))  # 7 digits
         self.assertFalse(is_max_seven_digits(Decimal(10000000)))  # 8 digits
+
+
+class TransactionAPITests(APITestCase):
+    def test_upload_file(self):
+        """
+        Ensure we can upload a valid csv file
+        """
+        file = BytesIO()
+        df = pd.read_csv(csv_test_file_1)
+        df.to_csv(file, sep=",", index=False, encoding="utf-8")
+        file.seek(0)
+        url = reverse('upload-csv')
+        response = self.client.post(
+            url,
+            {'file': file},
+            format='multipart'
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Transaction.objects.count(), 6)
