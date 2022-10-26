@@ -1,4 +1,3 @@
-import argparse
 import pandas as pd
 
 from django.core.management.base import BaseCommand
@@ -32,7 +31,7 @@ class Command(BaseCommand):
             self.stdout.write("File to write: " + self.csv_output)
         df = pd.read_csv(
             self.csv_input,
-            converters={"Date": date_from_str, 'Amount': decimal_from_value}
+            converters={"Date": date_from_str, "Amount": decimal_from_value},
         )
         df = df.reset_index()
         for index, row in df.iterrows():
@@ -50,7 +49,7 @@ class Command(BaseCommand):
     def print_result(self):
         self.stdout.write(
             self.style.SUCCESS(
-                'Read rows: {}. Not read rows: {}'.format(
+                "Read rows: {}. Not read rows: {}".format(
                     self.total_row_success,
                     self.total_row_failure,
                 )
@@ -63,6 +62,8 @@ class Command(BaseCommand):
         )
         try:
             if self.csv_output:
-                self.pd_errors.to_csv(self.csv_output, sep=',', index=False, encoding='utf-8')
+                self.pd_errors.to_csv(
+                    self.csv_output, sep=",", index=False, encoding="utf-8"
+                )
         except Exception:
             pass

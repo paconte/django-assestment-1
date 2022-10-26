@@ -1,12 +1,11 @@
 from decimal import Decimal
-from multiprocessing.sharedctypes import Value
 from typing import TypeVar
 from django.db import models
 
 from .utils import is_max_two_decimals, is_future, is_max_seven_digits
 
 
-Trx = TypeVar('Trx', bound='Transaction')
+Trx = TypeVar("Trx", bound="Transaction")
 
 
 class Transaction(models.Model):
