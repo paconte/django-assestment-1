@@ -14,7 +14,7 @@ def date_from_str(value: str) -> date:
 
 
 def is_future(value: date) -> bool:
-    return value > datetime.today().date()
+    return value > datetime.utcnow().today().date()
 
 
 def is_max_two_decimals(value: Decimal) -> bool:
@@ -27,3 +27,7 @@ def is_max_two_decimals(value: Decimal) -> bool:
 
 def is_max_seven_digits(value: Decimal) -> bool:
     return 10_000_000 > value.quantize(0)
+
+
+def get_utc_current_year() -> int:
+    return datetime.utcnow().date().year
