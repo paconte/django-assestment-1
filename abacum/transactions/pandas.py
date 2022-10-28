@@ -4,8 +4,27 @@ import pandas as pd
 from typing import List
 
 
-def pd_balance_calculator(data: List, is_monthly: bool) -> pd.DataFrame:
+def get_balance(data: List[List], is_monthly: bool) -> pd.DataFrame:
+    """
+    Creates a pandas DataFrame containing account balances
+
+    Parameters
+    ----------
+    data : List[List]
+        The data to be loaded into the pandas dataframe
+    is_monthly : bool
+        A flag used to sort the balance by month
+
+    Returns
+    -------
+    Dataframe
+        A dataframe with the calculated account balances
+    """
     df = pd.DataFrame(data)
+
+    if df.empty:
+        return df
+
     if is_monthly:
         df['date'] = pd.to_datetime(df['date'])
         df['date'] = df['date'].dt.strftime('%Y-%m')
@@ -24,11 +43,17 @@ def pd_balance_calculator(data: List, is_monthly: bool) -> pd.DataFrame:
     return df
 
 
-def dataframe_to_json(df: pd.DataFrame) -> str:
+def df_to_json(df: pd.DataFrame) -> str:
+    """
+    Wraps the json output of a DataFrame with the following format:
+    {
+        data: json_object
+    }
+    """
     if df.empty:
         result = json.loads(f"{{\"data\": []}}")
     else:
         df_json = df.to_json(orient="records")
-        result = json.loads(f"{{\"data\": [{df_json}]}}")
+        result = json.loads(f"{{\"data\": {df_json}}}")
 
     return result

@@ -12,7 +12,11 @@ class SaveFileSerializer(serializers.Serializer):
         model = Transaction
         fields = "__all__"
 
+
 class BalanceSerializer(serializers.Serializer[Any]):
+    """
+    Serializer for the parameters of the balance endpoint.
+    """
     year = serializers.IntegerField(required=False, min_value=1980)
     month = serializers.IntegerField(required=False, min_value=1, max_value=12)
     is_monthly = serializers.BooleanField(required=False)
@@ -23,11 +27,11 @@ class BalanceSerializer(serializers.Serializer[Any]):
         Check that start is before finish.
         """
         args = data.keys()
-        if len(data) > 3:
+        if len(args) > 3:
             raise serializers.ValidationError("Too many arguments")
-        elif "month" in args and "is_monthly" in args:
+        elif "month" in args and "is_monthly" in args and data["is_monthly"]:
             raise serializers.ValidationError(
-                "Aguments month and is_monthly=True are not allowed together."
+                "Arguments month and is_monthly=True are not allowed together."
             )
 
         return data

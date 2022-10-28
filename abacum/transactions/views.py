@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Transaction
-from .pandas import pd_balance_calculator, dataframe_to_json
+from .pandas import get_balance, df_to_json
 from .readers import CsvReader
 from .serializers import BalanceSerializer, FileUploadSerializer, SaveFileSerializer
 from .utils import get_utc_current_year
@@ -46,8 +46,8 @@ class BalanceView(APIView):
         self.is_monthly = serializer.data.get('is_monthly', False)
 
         data = list(self.get_queryset().values("account", "date", "amount"))
-        df = pd_balance_calculator(data, self.is_monthly)
-        content = dataframe_to_json(df)
+        df = get_balance(data, self.is_monthly)
+        content = df_to_json(df)
 
         return Response(content)
 
