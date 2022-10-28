@@ -10,8 +10,14 @@ makemigrations:
 migrate:
 	cd abacum && python manage.py migrate
 
+collectstatic:
+	cd abacum && python manage.py collectstatic -c
+
 docker-run:
 	docker run -it -p 8020:8020 abacum
+
+docker-build:
+	docker build . -f ./Dockerfile -t abacum
 
 runserver:
 	cd abacum && python manage.py runserver
