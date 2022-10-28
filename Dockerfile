@@ -12,6 +12,7 @@ WORKDIR /app
 COPY requirements.txt /app
 RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY abacum /app
+COPY abacum/static /app
 COPY nginx/start-server.sh /app
 RUN chown -R www-data:www-data /app
 EXPOSE 8020

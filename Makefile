@@ -10,8 +10,14 @@ makemigrations:
 migrate:
 	cd abacum && python manage.py migrate
 
+collectstatic:
+	cd abacum && rm -rf ./static && python manage.py collectstatic
+
 docker-run:
 	docker run -it -p 8020:8020 abacum
+
+docker-build: collectstatic
+	docker build . -f ./Dockerfile -t abacum
 
 runserver:
 	cd abacum && python manage.py runserver
@@ -28,3 +34,8 @@ import_csv_errors:
 # examples:
 # make import_csv IN_FILE=data/test/test1.csv -o data/errors1.csv
 	cd abacum && python manage.py import_csv $(IN_FILE) -o $(OUT_FILE)
+
+delete_db:
+	rm abacum/db.sqlite3
+
+reset_db: delete_db migrate

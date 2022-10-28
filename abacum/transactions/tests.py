@@ -1,4 +1,5 @@
 import datetime
+import json
 import pandas as pd
 
 from decimal import Decimal
@@ -14,6 +15,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from .models import Transaction
+from .pandas import df_to_json
 from .utils import (
     date_from_str,
     decimal_from_value,
@@ -26,7 +28,8 @@ from .utils import (
 today = datetime.datetime.today().date()
 csv_test_file_1 = "data/test/test1.csv"
 csv_test_file_2 = "data/test/test2.csv"
-csv_test_file_3 = "data/test/data.csv"
+csv_test_file_3 = "data/test/test3.csv"
+csv_test_file_4 = "data/test/data.csv"
 
 
 class TransactionModelTests(TransactionTestCase):
@@ -96,7 +99,7 @@ class TransactionModelTests(TransactionTestCase):
         self.assertIn(expected_output, out.getvalue())
         self.assertEquals(9, Transaction.objects.count())
 
-        call_command("import_csv", csv_test_file_3, stdout=out)
+        call_command("import_csv", csv_test_file_4, stdout=out)
         expected_output = "Read rows: 79999. Not read rows: 0"
         self.assertIn(expected_output, out.getvalue())
         self.assertEquals(80008, len(Transaction.objects.all()))
@@ -143,3 +146,92 @@ class TransactionAPITests(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Transaction.objects.count(), 6)
+
+
+class BalanceAPITests(APITestCase):
+    url = reverse('balance')
+
+    def setUp(self):
+        call_command("import_csv", csv_test_file_3)
+
+    def _test_balance(self, balances):
+        for b in balances:
+            self.assertEqual(0.0, b['balance'])
+
+    def test_too_many_arguments(self):
+        query_url = self.url + "?year=2020&month=1&account=1&is_monthly=True"
+        response = self.client.get(query_url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_month_and_is_monthly(self):
+        query_url = self.url + "?year=2020&month=1&is_monthly=True"
+        response = self.client.get(query_url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_full_year_balance_by_account(self):
+        query_url = self.url + "?year=2020"
+        response = self.client.get(query_url)
+        balances = response.data["data"]
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(4, len(balances))
+        self._test_balance(balances)
+
+    def test_full_year_balance_for_specific_account(self):
+        for i in range(100, 104):
+            query_url = self.url + "?year=2020&account=" + str(i)
+            response = self.client.get(query_url)
+            balances = response.data["data"]
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(1, len(balances))
+            self._test_balance(balances)
+
+    def test_monthly_balances_by_account(self):
+        query_url = self.url + "?year=2020&is_monthly=True"
+        response = self.client.get(query_url)
+        balances = response.data["data"]
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(8, len(balances))
+        self._test_balance(balances)
+
+    def test_monthly_balance_for_specific_account(self):
+        for i in range(100, 104):
+            query_url = self.url + "?is_monthly=True&year=2020&account=" + str(i)
+            response = self.client.get(query_url)
+            balances = response.data["data"]
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(2, len(balances))
+            self._test_balance(balances)
+
+    def test_monthly_balance_for_specific_month_by_account(self):
+        for i in range(1, 12):
+            query_url = self.url + "?is_monthly=True&year=2020&montht=" + str(i)
+            response = self.client.get(query_url)
+            balances = response.data["data"]
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self._test_balance(balances)
+
+    def test_monthly_balance_for_specific_month_and_specific_account(self):
+        for i in range(1, 12):
+            query_url = self.url + "?is_monthly=True&year=2020&month=" + str(i)
+            for j in range(100, 104):
+                query_url += "&account=" + str(j)
+                response = self.client.get(query_url)
+                if response.data.get("data", False):
+                    balances = response.data["data"]
+                    self.assertEqual(response.status_code, status.HTTP_200_OK)
+                    self._test_balance(balances)
+
+
+class PandasTests(TestCase):
+    def test_df_to_json(self):
+        result = df_to_json(pd.DataFrame([]))
+        self.assertEqual(json.loads(f"{{\"data\": []}}"), result)
+
+    def get_balance(self):
+        """This test is a duplicate of BalanceAPITest"""
+        pass
