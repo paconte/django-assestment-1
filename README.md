@@ -45,7 +45,7 @@ The django command `python manage.py import_csv` is avaibale and covers the user
     python manage.py import_csv IN_FILE
     ```
 
-will import the file `IN_FILE`, and if you want to write into a separate file the rows which were not imported due to error you can run:
+this will import the file `IN_FILE`, and if you want to write into a separate file the rows which were not imported due to error you can run:
 
     ```
     python manage.py import_csv IN_FILE -o OUT_FILE
@@ -62,7 +62,7 @@ Alternative you can run make to run the same command:
     make import_csv_errors IN_FILE=data/test/test3.csv
     ```
 
-Be aware this will only run in your local computer once you have set your python working environment. Another option is to log into the container image and run the command inside the container, however you need to figure out how to access the csv that you want to import, for example with a docker volume.
+Be aware this will only run in your local computer once you have set your python working environment. Another option is to log in into the container image and run the command inside the container, however you need to figure out how to access the csv that you want to import, for example with a docker volume.
 
 After importing csv files in your local computer, you can reset the databse with:
 
@@ -129,7 +129,7 @@ or adding the month as well:
     http://0.0.0.0:8020/transactions/balance/&year=2020&month=5&account=1234
     ```
 
-Last you can access the balance in a month with the is_monthly flag:
+Last you can access the monthly balance with the is_monthly flag:
 
     ```
     http://0.0.0.0:8020/transactions/balance/&year=2020&is_monthly=True
