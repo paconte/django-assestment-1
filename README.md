@@ -138,3 +138,12 @@ Last you can access the monthly balance with the is_monthly flag:
 
     http://0.0.0.0:8020/transactions/balance/&year=2020&is_monthly=True&account=1234
     ```
+
+# Live example
+The application is deployed on the internet. You can see it the endpoint here:
+
+http://195.201.148.68:8020/transactions/upload/
+
+http://195.201.148.68:8020/transactions/balance/
+
+Please be aware there is no ssl and the django config is still with dev settings.
