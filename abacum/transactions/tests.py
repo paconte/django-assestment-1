@@ -138,25 +138,21 @@ class TransactionAPITests(APITestCase):
         df = pd.read_csv(csv_test_file_1)
         df.to_csv(file, sep=",", index=False, encoding="utf-8")
         file.seek(0)
-        url = reverse('upload-csv')
-        response = self.client.post(
-            url,
-            {'file': file},
-            format='multipart'
-        )
+        url = reverse("upload-csv")
+        response = self.client.post(url, {"file": file}, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Transaction.objects.count(), 6)
 
 
 class BalanceAPITests(APITestCase):
-    url = reverse('balance')
+    url = reverse("balance")
 
     def setUp(self):
         call_command("import_csv", csv_test_file_3)
 
     def _test_balance(self, balances):
         for b in balances:
-            self.assertEqual(0.0, b['balance'])
+            self.assertEqual(0.0, b["balance"])
 
     def test_too_many_arguments(self):
         query_url = self.url + "?year=2020&month=1&account=1&is_monthly=True"
@@ -230,7 +226,7 @@ class BalanceAPITests(APITestCase):
 class PandasTests(TestCase):
     def test_df_to_json(self):
         result = df_to_json(pd.DataFrame([]))
-        self.assertEqual(json.loads(f"{{\"data\": []}}"), result)
+        self.assertEqual(json.loads('{{"data": []}}'), result)
 
     def get_balance(self):
         """This test is a duplicate of BalanceAPITest"""

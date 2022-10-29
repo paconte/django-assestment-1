@@ -34,6 +34,7 @@ class BalanceView(APIView):
     """
     API endpoint to fetch account balances.
     """
+
     serializer_class = BalanceSerializer
 
     def get(self, request, format=None):
@@ -42,15 +43,14 @@ class BalanceView(APIView):
 
         self.year = serializer.data.get("year", get_utc_current_year())
         self.month = serializer.data.get("month", None)
-        self.account = serializer.data.get('account', None)
-        self.is_monthly = serializer.data.get('is_monthly', False)
+        self.account = serializer.data.get("account", None)
+        self.is_monthly = serializer.data.get("is_monthly", False)
 
         data = list(self.get_queryset().values("account", "date", "amount"))
         df = get_balance(data, self.is_monthly)
         content = df_to_json(df)
 
         return Response(content)
-
 
     def get_queryset(self):
         if self.account and self.month:
@@ -61,8 +61,7 @@ class BalanceView(APIView):
             )
         if self.account:
             return Transaction.objects.filter(
-                date__year=self.year,
-                account=self.account
+                date__year=self.year, account=self.account
             )
         if self.month:
             return Transaction.objects.filter(

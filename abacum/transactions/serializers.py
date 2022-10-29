@@ -17,6 +17,7 @@ class BalanceSerializer(serializers.Serializer[Any]):
     """
     Serializer for the parameters of the balance endpoint.
     """
+
     year = serializers.IntegerField(required=False, min_value=1980)
     month = serializers.IntegerField(required=False, min_value=1, max_value=12)
     is_monthly = serializers.BooleanField(required=False)

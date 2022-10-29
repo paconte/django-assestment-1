@@ -26,8 +26,8 @@ def get_balance(data: List[List], is_monthly: bool) -> pd.DataFrame:
         return df
 
     if is_monthly:
-        df['date'] = pd.to_datetime(df['date'])
-        df['date'] = df['date'].dt.strftime('%Y-%m')
+        df["date"] = pd.to_datetime(df["date"])
+        df["date"] = df["date"].dt.strftime("%Y-%m")
         balance = df.groupby(["account", "date"]).sum()
         df = df.merge(balance, on=["account", "date"])
         df = df.rename(columns={"amount_y": "balance"}, errors="raise")
@@ -37,7 +37,7 @@ def get_balance(data: List[List], is_monthly: bool) -> pd.DataFrame:
         df = df.drop(columns={"date"})
         balance = df.groupby(["account"])["amount"].sum()
         df = df.drop(columns={"amount"}).drop_duplicates()
-        df = df.merge(balance, left_on='account', right_on='account')
+        df = df.merge(balance, left_on="account", right_on="account")
         df = df.rename(columns={"amount": "balance"}, errors="raise")
 
     return df
@@ -51,9 +51,9 @@ def df_to_json(df: pd.DataFrame) -> str:
     }
     """
     if df.empty:
-        result = json.loads(f"{{\"data\": []}}")
+        result = json.loads('{{"data": []}}')
     else:
         df_json = df.to_json(orient="records")
-        result = json.loads(f"{{\"data\": {df_json}}}")
+        result = json.loads(f'{{"data": {df_json}}}')
 
     return result
