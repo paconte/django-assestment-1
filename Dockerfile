@@ -1,4 +1,4 @@
-FROM python:3.9-bullseye
+FROM python:3.10-bullseye
 
 # install nginx
 RUN apt-get update && apt-get install nginx vim -y --no-install-recommends
