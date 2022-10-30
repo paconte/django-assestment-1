@@ -10,6 +10,11 @@ The database is slite3, this is very handy for development but not for performan
 
 Docker is used to build an image with nginx as a web server.
 
+### Transactions
+For convenience the transactions are decimals with two decimals values and 7 not decimal values. There are validations performed when importing values.
+Depending on the use case this values can be adjusted. Furthermore while importing a csv file, all the rows which do not pass the validation will be stored
+in an out csv file that could be later on processed, see CLI Usage.
+
 ## Usage
 You can run the public image which last version is 0.0.2:
 
@@ -31,7 +36,19 @@ You can run all the tests with:
     ```
 
 Alternative you can use python to run the app, but you will need to set up first your venv or install locally the libraries with pip.
-Setting up the environment is out of the scope of this readme. Once you have your environment ready run:
+You can do it by yourself or use the command:
+
+    ```sh
+    make setup
+    ```
+
+Once you have installed all the libraries with make setup, you can load the environment the next time with:
+
+    ```sh
+    source .venv/abacum/bin/activate
+    ```
+
+Once you have your environment ready run:
 
     ```sh
     make runserver
