@@ -226,7 +226,7 @@ class BalanceAPITests(APITestCase):
 class PandasTests(TestCase):
     def test_df_to_json(self):
         result = df_to_json(pd.DataFrame([]))
-        self.assertEqual(json.loads('{{"data": []}}'), result)
+        self.assertEqual(json.loads('{"data": []}'), result)
 
     def get_balance(self):
         """This test is a duplicate of BalanceAPITest"""

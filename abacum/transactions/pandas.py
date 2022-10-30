@@ -51,7 +51,7 @@ def df_to_json(df: pd.DataFrame) -> str:
     }
     """
     if df.empty:
-        result = json.loads('{{"data": []}}')
+        result = json.loads('{"data": []}')
     else:
         df_json = df.to_json(orient="records")
         result = json.loads(f'{{"data": {df_json}}}')
