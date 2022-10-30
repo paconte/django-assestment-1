@@ -16,10 +16,10 @@ Depending on the use case this values can be adjusted. Furthermore while importi
 in an out csv file that could be later on processed, see CLI Usage.
 
 ## Usage
-You can run the public image which last version is 0.0.2:
+You can run the public image which last version is 0.0.3:
 
     ```sh
-    docker run paconte/abacum=0.0.2
+    docker run paconte/abacum=0.0.3
     ```
 
 You can build your own image and run it:
