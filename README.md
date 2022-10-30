@@ -6,9 +6,11 @@ Django with Django Rest Freamework is used for the assestment.
 Django contains the application called transations. This app contains the transaction model where all transaction are stored.
 The views.py files contains the API endpoints logic.
 
-The database is slite3, this is very handy for development but not for performance.
+The database is sqlite3, this is very handy for development but not for performance.
 
 Docker is used to build an image with nginx as a web server.
+
+Python version 3.10 has been used for developing the app, there is no guarantee it works with other versions.
 
 ### Transactions
 For convenience the transactions are decimals with two decimals values and 7 not decimal values. There are validations performed when importing values.
@@ -16,6 +18,7 @@ Depending on the use case this values can be adjusted. Furthermore while importi
 in an out csv file that could be later on processed, see CLI Usage.
 
 ## Usage
+
 You can run the public image which last version is 0.0.3:
 
     ```sh
@@ -29,13 +32,7 @@ You can build your own image and run it:
     make docker-run
     ```
 
-You can run all the tests with:
-
-    ```sh
-    make test
-    ```
-
-Alternative you can use python to run the app, but you will need to set up first your venv or install locally the libraries with pip.
+Alternative you can use python to run the app, but you will need to set up first your venv and install locally the libraries with pip.
 You can do it by yourself or use the command:
 
     ```sh
@@ -48,10 +45,16 @@ Once you have installed all the libraries with make setup, you can load the envi
     source .venv/abacum/bin/activate
     ```
 
-Once you have your environment ready run:
+Once you have your environment ready start the application with:
 
     ```sh
     make runserver
+    ```
+
+or run your tests with:
+
+    ```sh
+    make test
     ```
 
 ## CLI usage
